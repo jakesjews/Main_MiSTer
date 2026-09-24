@@ -13,6 +13,8 @@
 #include "support/a2/dsk2nib_lib.h"
 // Apple IIgs disk integration
 #include "support/a2/iigs_disk.h"
+// Apple III
+#include "support/apple3/apple3_disk.h"
 
 // Mac
 #include "support/mac/mac.h"
