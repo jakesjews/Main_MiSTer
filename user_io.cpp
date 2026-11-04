@@ -294,10 +294,11 @@ char is_next()
 }
 
 // Guests that read the battery clock as UTC and apply their own time zone
-// (UNIX systems); every other guest gets the timestamp in local time.
+// (UNIX systems, and Genera on the XL1200); every other guest gets the
+// timestamp in local time.
 static char rtc_is_utc()
 {
-	return is_next() || is_hp9k_family();
+	return is_next() || is_hp9k_family() || is_xl1200();
 }
 
 char is_falcon()
@@ -1494,6 +1495,7 @@ void user_io_init(const char *path, const char *xml)
 	sun_enet_stop();
 	hp9k_enet_stop();
 	sgi_enet_stop();
+	xl1200_enet_stop();
 
 	// we need to set the directory to where the XML file (MRA) is
 	// not the RBF. The RBF will be in arcade, which the user shouldn't
@@ -1649,6 +1651,7 @@ void user_io_init(const char *path, const char *xml)
 				if (is_sun_family()) sun_enet_start();
 				if (is_hp9k_family()) hp9k_enet_start();
 				if (is_sgi_family()) sgi_enet_start();
+				if (is_xl1200()) xl1200_enet_start();
 
 				if (xml && isXmlName(xml) == 1)
 				{
@@ -3329,6 +3332,7 @@ static void mouse_reply(char code)
 static uint8_t use_ps2ctl = 0;
 static unsigned long rtc_timer = 0;
 static unsigned long next_rtc_timer = 0;
+static unsigned long xl1200_rtc_timer = 0;
 
 void user_io_rtc_reset()
 {
@@ -3406,6 +3410,7 @@ void user_io_poll()
 	sun_enet_poll();
 	hp9k_enet_poll();
 	sgi_enet_poll();
+	xl1200_enet_poll();
 
 	// The NeXT keeps a battery backed clock that the guest reads at
 	// boot; the one-shot update at core load is not enough if the core
@@ -3416,6 +3421,17 @@ void user_io_poll()
 	{
 		next_rtc_timer = GetTimer(60000);
 		send_rtc(1);
+	}
+
+	// The XL1200's calendar clock starts from the timestamp, which Genera
+	// reads as GMT when it boots, a while after the core loads: send it
+	// every minute, so a core loaded before the clock was set from the
+	// network gets the time once it is.  The core stops taking it once
+	// Genera sets the clock itself.
+	if (is_xl1200() && (!xl1200_rtc_timer || CheckTimer(xl1200_rtc_timer)))
+	{
+		xl1200_rtc_timer = GetTimer(60000);
+		send_rtc(2);
 	}
 
 	if (core_type == CORE_TYPE_8BIT && !is_menu())
