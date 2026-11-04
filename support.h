@@ -31,6 +31,7 @@
 #include "support/hp9k/hp9k_enet.h"
 #include "support/sgi/sgi.h"
 #include "support/sgi/sgi_enet.h"
+#include "support/xl1200/xl1200.h"
 
 // Archie support
 #include "support/archie/archie.h"
