@@ -210,7 +210,7 @@ char *user_io_get_core_path(const char *suffix, int recheck)
 // (UNIX systems); every other guest gets the timestamp in local time.
 static char rtc_is_utc()
 {
-	return is_next() || is_hp9k_family();
+	return is_next() || is_hp9k_family() || is_xl1200();
 }
 
 static char is_arcade_type = 0;
@@ -1314,6 +1314,7 @@ void user_io_init(const char *path, const char *xml)
 	is_ibmrs6k();
 	is_sgi_family();
 	is_decalpha();
+	is_xl1200();
 	is_marty();
 	is_pcfx();
 	is_apple3();
@@ -1404,6 +1405,7 @@ void user_io_init(const char *path, const char *xml)
 				if (is_ibmrs6k()) ibmrs6k_enet_start();
 				if (is_sgi_family()) sgi_enet_start();
 				if (is_decalpha()) decalpha_enet_start();
+				if (is_xl1200()) xl1200_init();
 
 				if (xml && isXmlName(xml) == 1)
 				{

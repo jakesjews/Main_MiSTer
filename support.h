@@ -35,6 +35,7 @@
 #include "support/sgi/sgi_enet.h"
 #include "support/decalpha/decalpha.h"
 #include "support/decalpha/decalpha_enet.h"
+#include "support/xl1200/xl1200.h"
 
 // Archie support
 #include "support/archie/archie.h"
